@@ -99,7 +99,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644) //nolint:gomnd
+	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644) //nolint:gomnd,nosnakecase
 	if err != nil {
 		log.Panic(err)
 	}
