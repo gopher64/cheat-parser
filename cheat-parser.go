@@ -1,0 +1,110 @@
+package main
+
+import (
+	"bufio"
+	"encoding/json"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/go-git/go-billy/v5/memfs"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/storage/memory"
+)
+
+type Option struct {
+	Name string `json:"name"`
+	Data string `json:"data"`
+}
+
+type Cheat struct {
+	Note       string   `json:"note"`
+	Data       []string `json:"data"`
+	Options    []Option `json:"options"`
+	HasOptions bool     `json:"has_options"`
+}
+
+type Game struct {
+	Name   string           `json:"name"`
+	Cheats map[string]Cheat `json:"cheats"`
+}
+
+func main() {
+	fs := memfs.New()
+
+	_, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+		URL:   "https://github.com/project64/project64.git",
+		Depth: 1,
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
+	basePath := "Config/Cheats"
+	items, err := fs.ReadDir(basePath)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	cheatDB := map[string]Game{}
+	currentGame := ""
+	currentCheat := ""
+	for _, item := range items {
+		file, err := fs.Open(filepath.Join(basePath, item.Name()))
+		if err != nil {
+			log.Panic(err)
+		}
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			game := cheatDB[currentGame]
+			cheat := game.Cheats[currentCheat]
+			if strings.HasPrefix(scanner.Text(), "[") {
+				currentGame = strings.Trim(scanner.Text(), "[]")
+				cheatDB[currentGame] = Game{Cheats: map[string]Cheat{}}
+			} else if strings.HasPrefix(scanner.Text(), "Name=") {
+				game.Name = strings.TrimPrefix(scanner.Text(), "Name=")
+				cheatDB[currentGame] = game
+			} else if strings.HasPrefix(scanner.Text(), "$") {
+				currentCheat = strings.TrimPrefix(scanner.Text(), "$")
+				game.Cheats[currentCheat] = Cheat{}
+				cheatDB[currentGame] = game
+			} else if strings.HasPrefix(scanner.Text(), "Note=") {
+				cheat.Note = strings.TrimPrefix(scanner.Text(), "Note=")
+				game.Cheats[currentCheat] = cheat
+			} else if scanner.Text() == "" {
+				// do nothing
+			} else if strings.Contains(scanner.Text(), "?") && !cheat.HasOptions {
+				cheat.HasOptions = true
+				cheat.Data = append(cheat.Data, scanner.Text())
+				game.Cheats[currentCheat] = cheat
+			} else if cheat.HasOptions {
+				option := Option{
+					Name: strings.Join(strings.Split(scanner.Text(), " ")[1:], " "),
+					Data: strings.Split(scanner.Text(), " ")[0],
+				}
+				cheat.Options = append(cheat.Options, option)
+				game.Cheats[currentCheat] = cheat
+			} else {
+				cheat.Data = append(cheat.Data, scanner.Text())
+				game.Cheats[currentCheat] = cheat
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			log.Panic(err)
+		}
+	}
+	b, err := json.MarshalIndent(cheatDB, "", "    ")
+	if err != nil {
+		log.Panic(err)
+	}
+	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Panic(err)
+	}
+	w := bufio.NewWriter(f)
+	w.Write(b)
+	w.Flush()
+}
