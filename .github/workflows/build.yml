@@ -23,3 +23,10 @@ jobs:
       - name: run code
         run: |
           go run .
+
+      - name: Commit cheats
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email '848146+loganmc10@users.noreply.github.com'
+          git commit -am "Update cheats"
+          git push
