@@ -25,11 +25,6 @@ type Cheat struct {
 	HasOptions bool     `json:"hasOptions"`
 }
 
-type Game struct {
-	Name   string           `json:"name"`
-	Cheats map[string]Cheat `json:"cheats"`
-}
-
 func main() {
 	fs := memfs.New()
 
@@ -46,7 +41,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	cheatDB := map[string]Game{}
+	cheatDB := map[string]map[string]Cheat{}
 	currentGame := ""
 	currentCheat := ""
 	for _, item := range items {
@@ -58,36 +53,35 @@ func main() {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			game := cheatDB[currentGame]
-			cheat := game.Cheats[currentCheat]
+			cheat := game[currentCheat]
 			if strings.HasPrefix(scanner.Text(), "[") {
 				currentGame = strings.Trim(scanner.Text(), "[]")
-				cheatDB[currentGame] = Game{Cheats: map[string]Cheat{}}
+				cheatDB[currentGame] = map[string]Cheat{}
 			} else if strings.HasPrefix(scanner.Text(), "Name=") {
-				game.Name = strings.TrimPrefix(scanner.Text(), "Name=")
-				cheatDB[currentGame] = game
+				// do nothing
 			} else if strings.HasPrefix(scanner.Text(), "$") {
 				currentCheat = strings.TrimPrefix(scanner.Text(), "$")
-				game.Cheats[currentCheat] = Cheat{}
+				game[currentCheat] = Cheat{}
 				cheatDB[currentGame] = game
 			} else if strings.HasPrefix(scanner.Text(), "Note=") {
 				cheat.Note = strings.TrimPrefix(scanner.Text(), "Note=")
-				game.Cheats[currentCheat] = cheat
+				game[currentCheat] = cheat
 			} else if scanner.Text() == "" {
 				// do nothing
 			} else if strings.Contains(scanner.Text(), "?") && !cheat.HasOptions {
 				cheat.HasOptions = true
 				cheat.Data = append(cheat.Data, scanner.Text())
-				game.Cheats[currentCheat] = cheat
+				game[currentCheat] = cheat
 			} else if cheat.HasOptions {
 				option := Option{
 					Name: strings.Join(strings.Split(scanner.Text(), " ")[1:], " "),
 					Data: strings.Split(scanner.Text(), " ")[0],
 				}
 				cheat.Options = append(cheat.Options, option)
-				game.Cheats[currentCheat] = cheat
+				game[currentCheat] = cheat
 			} else {
 				cheat.Data = append(cheat.Data, scanner.Text())
-				game.Cheats[currentCheat] = cheat
+				game[currentCheat] = cheat
 			}
 		}
 
