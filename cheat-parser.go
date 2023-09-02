@@ -22,7 +22,7 @@ type Cheat struct {
 	Note       string   `json:"note"`
 	Data       []string `json:"data"`
 	Options    []Option `json:"options"`
-	HasOptions bool     `json:"has_options"`
+	HasOptions bool     `json:"hasOptions"`
 }
 
 type Game struct {
@@ -33,11 +33,10 @@ type Game struct {
 func main() {
 	fs := memfs.New()
 
-	_, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+	if _, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
 		URL:   "https://github.com/project64/project64.git",
 		Depth: 1,
-	})
-	if err != nil {
+	}); err != nil {
 		log.Panic(err)
 	}
 
@@ -100,11 +99,13 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		log.Panic(err)
 	}
 	w := bufio.NewWriter(f)
-	w.Write(b)
+	if _, err := w.Write(b); err != nil {
+		log.Panic(err)
+	}
 	w.Flush()
 }
