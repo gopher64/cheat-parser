@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint-linux:
+  run-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
