@@ -18,7 +18,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          args: --timeout=10m --enable-all
+          args: --timeout=10m --enable-all --disable wsl,gocritic,funlen,depguard,exhaustivestruct,varnamelen
 
       - name: run code
         run: |
