@@ -96,7 +96,7 @@ func main() {
 		}
 	}
 
-	b, err := json.MarshalIndent(cheatDB, "", "    ")
+	b, err := json.Marshal(cheatDB)
 	if err != nil {
 		log.Panic(err)
 	}
