@@ -95,14 +95,17 @@ func main() {
 			log.Panic(err)
 		}
 	}
+
 	b, err := json.MarshalIndent(cheatDB, "", "    ")
 	if err != nil {
 		log.Panic(err)
 	}
+
 	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644) //nolint:gomnd,nosnakecase
 	if err != nil {
 		log.Panic(err)
 	}
+
 	w := bufio.NewWriter(f)
 	if _, err := w.Write(b); err != nil {
 		log.Panic(err)
