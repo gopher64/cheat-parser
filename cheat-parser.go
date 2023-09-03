@@ -68,7 +68,7 @@ func main() {
 				cheat.Options = map[string]string{}
 				cheat.Data = append(cheat.Data, scanner.Text())
 				game[currentCheat] = cheat
-			} else if cheat.HasOptions {
+			} else if cheat.HasOptions && len(strings.Split(scanner.Text(), " ")[0]) < 8 {
 				cheat.Options[strings.Join(strings.Split(scanner.Text(), " ")[1:], " ")] = strings.Split(scanner.Text(), " ")[0]
 				game[currentCheat] = cheat
 			} else {
