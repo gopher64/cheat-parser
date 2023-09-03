@@ -13,16 +13,11 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-type Option struct {
-	Name string `json:"name"`
-	Data string `json:"data"`
-}
-
 type Cheat struct {
-	Note       string   `json:"note"`
-	Data       []string `json:"data"`
-	Options    []Option `json:"options"`
-	HasOptions bool     `json:"hasOptions"`
+	Note       string            `json:"note"`
+	Data       []string          `json:"data"`
+	Options    map[string]string `json:"options"`
+	HasOptions bool              `json:"hasOptions"`
 }
 
 func main() {
@@ -70,14 +65,11 @@ func main() {
 				// do nothing
 			} else if strings.Contains(scanner.Text(), "?") && !cheat.HasOptions {
 				cheat.HasOptions = true
+				cheat.Options = map[string]string{}
 				cheat.Data = append(cheat.Data, scanner.Text())
 				game[currentCheat] = cheat
 			} else if cheat.HasOptions {
-				option := Option{
-					Name: strings.Join(strings.Split(scanner.Text(), " ")[1:], " "),
-					Data: strings.Split(scanner.Text(), " ")[0],
-				}
-				cheat.Options = append(cheat.Options, option)
+				cheat.Options[strings.Join(strings.Split(scanner.Text(), " ")[1:], " ")] = strings.Split(scanner.Text(), " ")[0]
 				game[currentCheat] = cheat
 			} else {
 				cheat.Data = append(cheat.Data, scanner.Text())
