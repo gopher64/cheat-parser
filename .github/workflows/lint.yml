@@ -16,7 +16,6 @@ jobs:
         with:
           go-version-file: "go.mod"
           cache: false
-      - run: go mod tidy
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
