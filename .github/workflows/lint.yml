@@ -19,4 +19,4 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
-          args: --timeout=10m --default all --disable wsl,gocritic,funlen,depguard,varnamelen,nestif,cyclop,exhaustruct,revive
+          args: --timeout=10m

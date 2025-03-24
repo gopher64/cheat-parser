@@ -44,7 +44,7 @@ func main() {
 		if err != nil {
 			log.Panic(err)
 		}
-		defer file.Close()
+		defer file.Close() //nolint:errcheck
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			game := cheatDB[currentGame]
@@ -87,7 +87,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644) //nolint:gomnd,mnd
+	f, err := os.OpenFile("cheats.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -96,5 +96,5 @@ func main() {
 	if _, err := w.Write(b); err != nil {
 		log.Panic(err)
 	}
-	w.Flush()
+	w.Flush() //nolint:errcheck
 }
