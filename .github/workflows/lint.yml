@@ -17,6 +17,6 @@ jobs:
           go-version-file: "go.mod"
           cache: false
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
           args: --timeout=10m --enable-all --disable wsl,gocritic,funlen,depguard,exhaustivestruct,varnamelen,nestif,cyclop,exhaustruct,revive
