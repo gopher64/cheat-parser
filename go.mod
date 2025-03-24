@@ -1,8 +1,6 @@
 module github.com/simple64/cheat-parser
 
-go 1.23.0
-
-toolchain go1.23.6
+go 1.23.7
 
 require (
 	github.com/go-git/go-billy/v5 v5.6.2
