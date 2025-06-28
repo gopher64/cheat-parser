@@ -1,5 +1,8 @@
 name: Lint project
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
