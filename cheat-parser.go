@@ -14,10 +14,9 @@ import (
 )
 
 type Cheat struct {
-	Note       string            `json:"note"`
-	Data       []string          `json:"data"`
-	Options    map[string]string `json:"options"`
-	HasOptions bool              `json:"hasOptions"`
+	Note    string            `json:"note"`
+	Data    []string          `json:"data"`
+	Options map[string]string `json:"options"`
 }
 
 func main() {
@@ -63,12 +62,11 @@ func main() {
 				game[currentCheat] = cheat
 			} else if scanner.Text() == "" {
 				// do nothing
-			} else if strings.Contains(scanner.Text(), "?") && !cheat.HasOptions {
-				cheat.HasOptions = true
+			} else if strings.Contains(scanner.Text(), "?") && cheat.Options == nil {
 				cheat.Options = map[string]string{}
 				cheat.Data = append(cheat.Data, scanner.Text())
 				game[currentCheat] = cheat
-			} else if cheat.HasOptions && len(strings.Split(scanner.Text(), " ")[0]) < 8 {
+			} else if cheat.Options != nil && len(strings.Split(scanner.Text(), " ")[0]) < 8 {
 				cheat.Options[strings.Join(strings.Split(scanner.Text(), " ")[1:], " ")] = strings.Split(scanner.Text(), " ")[0]
 				game[currentCheat] = cheat
 			} else {
