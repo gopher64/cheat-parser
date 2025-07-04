@@ -98,6 +98,15 @@ func main() {
 		}
 	}
 
+	for game, cheats := range cheatDB {
+		for cheat_name, cheat := range cheats {
+			if len(cheat.Data) == 0 {
+				delete(cheatDB[game], cheat_name)
+				log.Printf("Removing empty cheat %s for game %s\n", cheat_name, game)
+			}
+		}
+	}
+
 	b, err := json.Marshal(cheatDB)
 	if err != nil {
 		log.Panic(err)
