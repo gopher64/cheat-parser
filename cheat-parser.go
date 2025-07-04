@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/go-git/go-billy/v5/memfs"
@@ -17,6 +18,11 @@ type Cheat struct {
 	Note    string            `json:"note"`
 	Data    []string          `json:"data"`
 	Options map[string]string `json:"options"`
+}
+
+func isHex(s string) bool {
+	var hexRegex = regexp.MustCompile(`^[0-9A-F ?]+$`)
+	return hexRegex.MatchString(s)
 }
 
 func main() {
@@ -69,9 +75,12 @@ func main() {
 			} else if cheat.Options != nil && len(strings.Split(scanner.Text(), " ")[0]) < 8 {
 				cheat.Options[strings.Join(strings.Split(scanner.Text(), " ")[1:], " ")] = strings.Split(scanner.Text(), " ")[0]
 				game[currentCheat] = cheat
-			} else {
+			} else if isHex(scanner.Text()) {
 				cheat.Data = append(cheat.Data, scanner.Text())
 				game[currentCheat] = cheat
+			} else {
+				delete(game, currentCheat)
+				log.Printf("Unknown line in cheat file %s, %s: %s\n", filepath.Join(basePath, item.Name()), currentCheat, scanner.Text())
 			}
 		}
 
